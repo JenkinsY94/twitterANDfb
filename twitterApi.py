@@ -42,8 +42,12 @@ def get_home_timeline():
                 'user': tweet.user.screen_name,
                 'id': tweet.id}
         newTweets.append(data)
-    print newTweets
-    #storeToDB(public_tweets)
+    # print newTweets
+    # storeToDB(public_tweets)
     return newTweets
 
-get_home_timeline()
+
+if __name__ == '__main__':
+    newTweets = get_home_timeline()
+    for t in newTweets:
+        print t
