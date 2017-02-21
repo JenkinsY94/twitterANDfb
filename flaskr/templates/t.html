@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<title>Index Page</title>
+<style type="text/css">
+	h1 {
+		text-align:center;
+	 }
+	.btn
+	{
+		font-size:130%;
+	}
+	body
+	{
+	} 
+</style>
+</head>
+<body>
+    <div class="container">
+    <h1>DataExtraction </h1>
+    
+    <div class="col-md-12">
+         <h3><span class="label label-default">Configuration</span></h3>
+    	<div class="col-md-4"><button class="btn btn-default" onclick="window.location.href='newConfig.jsp?type=new'; window.event.returnValue=false;">New config file</button><br/><i>(unsaved file will be deleted)</i>  <br><br></div>
+    	<div class="col-md-4"><button class="btn btn-default" onclick="window.location.href='uploadConfig.jsp'">Upload configuration file</button><br><br></div>
+    	<div class="col-md-4"><button class="btn btn-default"  onclick="window.location.href='newConfig.jsp?type=edit'">Edit config file</button></div>
+   	</div>
+   	
+   	<br/>
+    <br/>
+   	<div class="col-md-12">
+   	<h3><span class="label label-default">Source</span></h3>
+    <button class="btn btn-default" onclick="window.location.href='UploadMultiple.jsp'">upload source file</button><br/>
+    <i>in the format of word</i>
+    <br>
+    <br>
+    <br>
+      
+    </div>
+   
+    <div class="col-md-12">
+    <h3><span class="label label-default">Opearation</span></h3>
+    <div class="col-md-4">
+    <button class="btn btn-default"  onclick="window.location.href='AnalyzeServlet'" style="text-align:center">Analyze</button>
+    </div>
+    <div class="col-md-4">
+    <button class="btn btn-default"  onclick="window.location.href='Browser.jsp'" style="text-align:center">Manage files</button>
+     </div>
+    <div class="col-md-4">
+    <button class="btn btn-default"  onclick="window.location.href='Database.jsp'" style="text-align:center">Import Data</button>
+    </div>
+    </div>
+    
+    </div>
+    
+    
+</body>
+</html>
