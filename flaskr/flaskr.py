@@ -6,7 +6,7 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
 	 render_template, flash
 
-
+from twitterApi import *
 
 app = Flask(__name__)
 
@@ -71,7 +71,6 @@ def show_entries():
 
 @app.route('/t')
 def show_t():
-   
 	return render_template('t.html')
 
 @app.route('/add', methods=['POST'])
@@ -90,9 +89,12 @@ def add_entry():
 def login():
 	error = None
 	if request.method == 'POST':
-		if request.form['username'] != app.config['USERNAME']:
-			error = 'Invalid username'
-		elif request.form['password'] != app.config['PASSWORD']:
+		db = get_db()
+		cur=db.execute('select password from users where username=?',[request.form['username']])
+		
+		password=cur.fetchone()[0]
+		print(password)
+		if request.form['password'] != password or password==None:
 			error = 'Invalid password'
 		else:
 			session['logged_in'] = True
@@ -117,6 +119,17 @@ def register():
 	return render_template('login.html', error=error)
 		
 		
+
+@app.route('/twitter')
+def get_twitter():
+	db = get_db()
+	cur = db.cursor()
+	cur.execute('select * from Twitter order by id desc')
+	tweets = cur.fetchall()
+	#tweets=get_home_timeline()
+	#for row in cur:
+	#print(cur.fetchall())
+	return render_template('twitter.html',posts=tweets)
 
 @app.route('/logout')
 def logout():
