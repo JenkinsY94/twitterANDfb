@@ -15,7 +15,8 @@ api = tweepy.API(auth)
 # tweets: a list of status object 
 def storeToDB(tweets):
     # database configuration
-    conn = sqlite3.connect('cmsc5702db.sqlite')
+    #conn = sqlite3.connect('cmsc5702db.sqlite')
+    conn = sqlite3.connect('cmsc5702.db')
     cur = conn.cursor()
     # cur.execute('''
     # DROP TABLE IF EXISTS Twitter''')
@@ -26,7 +27,7 @@ def storeToDB(tweets):
                     id INTEGER NOT NULL PRIMARY KEY UNIQUE)''')
     
     for tweet in tweets:
-        cur.execute(''' INSERT INTO Twitter (tweet, createTime, user, id) 
+        cur.execute(''' INSERT OR IGNORE INTO Twitter (tweet, createTime, user, id)
                         VALUES (?,?,?,?)''',\
                         (tweet.text, tweet.created_at, tweet.user.screen_name, tweet.id))
     conn.commit()
@@ -50,4 +51,5 @@ def get_home_timeline():
 if __name__ == '__main__':
     newTweets = get_home_timeline()
     for t in newTweets:
-        print t
+       print (t['createTime'])
+
