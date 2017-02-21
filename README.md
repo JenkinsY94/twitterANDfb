@@ -1,2 +1,2 @@
 # twitterANDfb
-integrate twitter and facebook content
+integrate feeds from twitter and facebook
