@@ -17,6 +17,7 @@ def storeToDB(feeds):
                        VALUES (?,?,?,?)''',\
                        (feed[0], feed[1], feed[2], feed[3]))
     
+    #cur.execute('''SELECT * FROM FB ORDER BY datetime(createTime) DESC Limit 1''')
     connection.commit()
     cur.close()
     
@@ -60,6 +61,7 @@ def getNewsFeeds(graph,k):
                 txt.append('NULL')
             txts.append(txt)
             txt = []
+    storeToDB(txt)
     return txts
     
 #post message
@@ -74,7 +76,6 @@ if __name__ == "__main__":
     #token = token_entend(token)
     mygraph = login_FB(token);
     news_feeds = getNewsFeeds(mygraph,10)
-    storeToDB(news_feeds)
     with open("./NewsPosts.txt",'w', encoding='UTF-8') as f:
         for feed in news_feeds:
             for x in range(1,len(feed)):
