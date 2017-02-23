@@ -75,8 +75,8 @@ def postToFB(graph, txt):
 #post photo
 #graph.put_photo(image=open('./p1.jpg','rb'), message = "天虎劍令")
 
-def invokeFB(app):
-	token = 'EAAMPUPK3EpoBAPhleJ2yZA7OvZByN2sq0VezW59SKQGeH3rZBtrVqrFuKH5oq3FXXpZAZArLw1ZCZCUOQng4n2lf97p7fdB3qpauAW3MyL9vwrooPK4LfHTi0VleHADc8EGj0cCS0Ph1T0VsAlZCUScrHoU8Tinohy0ZD'
+def invokeFB(app,token):
+	#token = 'EAAMPUPK3EpoBAPhleJ2yZA7OvZByN2sq0VezW59SKQGeH3rZBtrVqrFuKH5oq3FXXpZAZArLw1ZCZCUOQng4n2lf97p7fdB3qpauAW3MyL9vwrooPK4LfHTi0VleHADc8EGj0cCS0Ph1T0VsAlZCUScrHoU8Tinohy0ZD'
 	#token = token_entend(token)
 	db=os.path.join(app.root_path, 'flaskr.db')
 	print(db)

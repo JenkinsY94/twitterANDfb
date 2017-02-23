@@ -9,6 +9,11 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from twitterApi import *
 from FBGetter import *
 app = Flask(__name__)
+fToken=''
+tToken=''
+tkey=''
+tsecret1=''
+tsecret2=''
 
 
 # Load default config and override config from an environment variable
@@ -62,12 +67,18 @@ def login():
 		db = get_db()
 		cur=db.execute('select password from users where username=?',[request.form['username']])
 		
-		password=cur.fetchone()[0]
+		temp=cur.fetchone()
+		if(temp==None):
+			error = 'Invalid username'
+			return render_template('login.html', error=error)
+		else:
+			password=temp[0]
 		print(password)
 		if request.form['password'] != password or password==None:
 			error = 'Invalid password'
 		else:
 			session['logged_in'] = True
+			session['username'] = request.form['username']
 			return redirect(url_for('get_twitter'))
 	return render_template('login.html', error=error)
 
@@ -80,7 +91,10 @@ def register():
 	error = None
 	if request.method == 'POST':
 		db = get_db()
-		db.execute('insert into users (username, password) values (?, ?)',[request.form['username'], request.form['password']])
+		db.execute('insert into users (username, password, fToken,tToken,tkey,tsecret1,tsecret2) values (?, ?, ?, ?, ?, ?, ?)',\
+					[request.form['username'], request.form['password'],\
+					'EAAMPUPK3EpoBAPhleJ2yZA7OvZByN2sq0VezW59SKQGeH3rZBtrVqrFuKH5oq3FXXpZAZArLw1ZCZCUOQng4n2lf97p7fdB3qpauAW3MyL9vwrooPK4LfHTi0VleHADc8EGj0cCS0Ph1T0VsAlZCUScrHoU8Tinohy0ZD', \
+					'2730924608-X1AXFfLS7sgyxNxj3APqP8PEbUYgH0u1puhfuB1', 'c43sHTF6pwfXu9uiPyrWeMc95', 'c0viwHlmcm63qlIgVtniVUSIpa1ihEp8wdEy2FUspNBNL8EXUr', 'oqNCgBz1aBnzBm98xuVod946iV3IVMJ40IEGd5vKIKYtK'])
 		db.commit()
 		session['logged_in'] = True
 		flash('You were logged in')
@@ -98,14 +112,23 @@ def get_twitter():
 	if 'logged_in' not in session:
 		return redirect(url_for('login'))
 	else:
-		get_home_timeline()
+		db = get_db()
+		cur=db.execute('select tToken,tkey,tsecret1,tsecret2 from users where username=?',[session['username']])
+		a = cur.fetchone()
+		tToken=a[0]
+		tkey=a[1]
+		tsecret1=a[2]
+		tsecret2=a[3]
+		print(tkey)
+		print(tToken)
+		get_home_timeline(tkey, tsecret1, tToken, tsecret2)
 		db = get_db()
 		cur = db.cursor()
 		cur.execute('select * from Twitter order by id desc')
 		tweets = cur.fetchall()
-	#tweets=get_home_timeline()
-	#for row in cur:
-	#print(cur.fetchall())
+		#tweets=get_home_timeline()
+		#for row in cur:
+		#print(cur.fetchall())
 		return render_template('twitter.html',posts=tweets)
 	
 @app.route('/facebook')
@@ -113,20 +136,21 @@ def get_facebook():
 	if 'logged_in' not in session:
 		return redirect(url_for('login'))
 	else:
+		db = get_db()
+		cur=db.execute('select fToken from users where username=?',[session['username']])
+		fToken = cur.fetchone()[0]
 		last_refresh = start
 		if time.clock() - last_refresh >100:
 			last_refresh = time.clock()
-			invokeFB(app)
+			invokeFB(app,fToken)
 		db = get_db()
 		cur = db.cursor()
 		cur.execute('select * from FB order by createTime desc')
-		tweets = cur.fetchall()
-	#tweets=get_home_timeline()
-	#for row in cur:
-	#print(cur.fetchall())
-		return render_template('facebook.html',posts=tweets)
+		feeds = cur.fetchall()
+		return render_template('facebook.html',posts=feeds)
 
 @app.route('/logout')
 def logout():	
+	session.pop('logged_in',None)
 	flash('You were logged out')
 	return redirect(url_for('login'))
