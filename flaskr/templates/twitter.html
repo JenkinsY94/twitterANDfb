@@ -37,10 +37,13 @@
 
  {% if session.logged_in %}
      {% endif %}
-
-<div>
+	 
+{% for post in posts %}
+<div class="row">
+  <div class="col-md-2">
+  </div>
+  <div class="col-md-8">
   
-  {% for post in posts %}
   <div class="panel panel-primary" >
     <div class="panel-heading">
         <h3 class="panel-title">{{ post[2]}}</h3> &nbsp{{ post[1] }}
@@ -49,10 +52,12 @@
 	<h5>{{ post[0]}}</h5>
 	</div>
   </div>
+  </div>
+ </div>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em></li>
   {% endfor %}
-</div>
+
 </div>
 </body>
 </html>

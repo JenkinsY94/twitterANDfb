@@ -15,4 +15,14 @@ create table users (
   tsecret1 text,
   tsecret2 text
   );
-
+CREATE TABLE IF NOT EXISTS FB
+				   (id TEXT NOT NULL PRIMARY KEY UNIQUE,
+					name TEXT,
+					createTime TEXT,
+					message TEXT );
+					
+CREATE TABLE IF NOT EXISTS Twitter 
+				   (tweet TEXT, 
+					createTime TEXT, 
+					user TEXT, 
+					id INTEGER NOT NULL PRIMARY KEY UNIQUE);

@@ -10,11 +10,11 @@ def storeToDB(feeds,db):
 	connection = sqlite3.connect(db)
 	cur = connection.cursor()
 	# DROP TABLE IF EXISTS FB
-	cur.execute('''CREATE TABLE IF NOT EXISTS FB
-				   (id TEXT NOT NULL PRIMARY KEY UNIQUE,
-					name TEXT,
-					createTime TEXT,
-					message TEXT )''')
+	#cur.execute('''CREATE TABLE IF NOT EXISTS FB
+	#			   (id TEXT NOT NULL PRIMARY KEY UNIQUE,
+	#				name TEXT,
+	#				createTime TEXT,
+	#				message TEXT )''')
 	
 	for feed in feeds:
 		cur.execute('''INSERT or IGNORE INTO  FB (id, name, createTime, message)
@@ -78,7 +78,7 @@ def postToFB(graph, txt):
 def invokeFB(app,token):
 	#token = 'EAAMPUPK3EpoBAPhleJ2yZA7OvZByN2sq0VezW59SKQGeH3rZBtrVqrFuKH5oq3FXXpZAZArLw1ZCZCUOQng4n2lf97p7fdB3qpauAW3MyL9vwrooPK4LfHTi0VleHADc8EGj0cCS0Ph1T0VsAlZCUScrHoU8Tinohy0ZD'
 	#token = token_entend(token)
-	db=os.path.join(app.root_path, 'flaskr.db')
+	db=os.path.join(app.root_path, 'TnF.db')
 	print(db)
 	mygraph = login_FB(token);
 	news_feeds = getNewsFeeds(mygraph,10)
