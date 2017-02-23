@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
-
+import time
 import os
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
 	 render_template, flash
 
 from twitterApi import *
-
+from FBGetter import *
 app = Flask(__name__)
-
-
 
 
 # Load default config and override config from an environment variable
@@ -22,17 +20,15 @@ app.config.update(dict(
 	PASSWORD='default'
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
+start = time.clock()
 
 def connect_db():
-	"""Connects to the specific database."""
 	rv = sqlite3.connect(app.config['DATABASE'])
 	rv.row_factory = sqlite3.Row
 	return rv
 
 
 def init_db():
-	"""Initializes the database."""
 	db = get_db()
 	with app.open_resource('schema.sql', mode='r') as f:
 		db.cursor().executescript(f.read())
@@ -41,15 +37,11 @@ def init_db():
 
 @app.cli.command('initdb')
 def initdb_command():
-	"""Creates the database tables."""
 	init_db()
 	print('Initialized the database.')
 
 
 def get_db():
-	"""Opens a new database connection if there is none yet for the
-	current application context.
-	"""
 	if not hasattr(g, 'sqlite_db'):
 		g.sqlite_db = connect_db()
 	return g.sqlite_db
@@ -57,37 +49,15 @@ def get_db():
 
 @app.teardown_appcontext
 def close_db(error):
-	"""Closes the database again at the end of the request."""
 	if hasattr(g, 'sqlite_db'):
 		g.sqlite_db.close()
 
-
-@app.route('/')
-def show_entries():
-	db = get_db()
-	cur = db.execute('select title, text from entries order by id desc')
-	entries = cur.fetchall()
-	return render_template('show_entries.html', entries=entries)
-
-@app.route('/t')
-def show_t():
-	return render_template('t.html')
-
-@app.route('/add', methods=['POST'])
-def add_entry():
-	if not session.get('logged_in'):
-		abort(401)
-	db = get_db()
-	db.execute('insert into entries (title, text) values (?, ?)',
-			   [request.form['title'], request.form['text']])
-	db.commit()
-	flash('New entry was successfully posted')
-	return redirect(url_for('show_entries'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	error = None
+	
 	if request.method == 'POST':
 		db = get_db()
 		cur=db.execute('select password from users where username=?',[request.form['username']])
@@ -98,8 +68,7 @@ def login():
 			error = 'Invalid password'
 		else:
 			session['logged_in'] = True
-			flash('You were logged in')
-			return redirect(url_for('show_entries'))
+			return redirect(url_for('get_twitter'))
 	return render_template('login.html', error=error)
 
 @app.route('/show_register')
@@ -115,24 +84,49 @@ def register():
 		db.commit()
 		session['logged_in'] = True
 		flash('You were logged in')
-		return redirect(url_for('show_entries'))
+		return redirect(url_for('get_twitter'))
 	return render_template('login.html', error=error)
 		
+
+@app.route('/')
+def index():
+	return redirect(url_for('login'))
 		
 
 @app.route('/twitter')
 def get_twitter():
-	db = get_db()
-	cur = db.cursor()
-	cur.execute('select * from Twitter order by id desc')
-	tweets = cur.fetchall()
+	if 'logged_in' not in session:
+		return redirect(url_for('login'))
+	else:
+		get_home_timeline()
+		db = get_db()
+		cur = db.cursor()
+		cur.execute('select * from Twitter order by id desc')
+		tweets = cur.fetchall()
 	#tweets=get_home_timeline()
 	#for row in cur:
 	#print(cur.fetchall())
-	return render_template('twitter.html',posts=tweets)
+		return render_template('twitter.html',posts=tweets)
+	
+@app.route('/facebook')
+def get_facebook():
+	if 'logged_in' not in session:
+		return redirect(url_for('login'))
+	else:
+		last_refresh = start
+		if time.clock() - last_refresh >100:
+			last_refresh = time.clock()
+			invokeFB(app)
+		db = get_db()
+		cur = db.cursor()
+		cur.execute('select * from FB order by createTime desc')
+		tweets = cur.fetchall()
+	#tweets=get_home_timeline()
+	#for row in cur:
+	#print(cur.fetchall())
+		return render_template('facebook.html',posts=tweets)
 
 @app.route('/logout')
-def logout():
-	session.pop('logged_in', None)
+def logout():	
 	flash('You were logged out')
-	return redirect(url_for('show_entries'))
+	return redirect(url_for('login'))

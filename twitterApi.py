@@ -1,6 +1,6 @@
 import tweepy
 import sqlite3
-
+import os
 # twitter token configuration
 consumer_key = "c43sHTF6pwfXu9uiPyrWeMc95" 
 consumer_secret = "c0viwHlmcm63qlIgVtniVUSIpa1ihEp8wdEy2FUspNBNL8EXUr"
@@ -16,7 +16,7 @@ api = tweepy.API(auth)
 def storeToDB(tweets):
     # database configuration
     #conn = sqlite3.connect('cmsc5702db.sqlite')
-    conn = sqlite3.connect('cmsc5702.db')
+    conn = sqlite3.connect('flaskr.db')
     cur = conn.cursor()
     # cur.execute('''
     # DROP TABLE IF EXISTS Twitter''')
@@ -44,7 +44,7 @@ def get_home_timeline():
                 'id': tweet.id}
         newTweets.append(data)
     # print newTweets
-    # storeToDB(public_tweets)
+    storeToDB(public_tweets)
     return newTweets
 
 
